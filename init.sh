@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source .env
+
 # Required ARM environment variables
 REQUIRED_VARS=(
   "ARM_CLIENT_ID"
@@ -40,4 +42,5 @@ terraform init \
   -backend-config="resource_group_name=$BACKEND_RG_NAME" \
   -backend-config="storage_account_name=$BACKEND_SA_NAME" \
   -backend-config="container_name=$BACKEND_CONTAINER_NAME" \
-  -backend-config="key=terraform.tfstate"
+  -backend-config="key=terraform.tfstate" \
+  -upgrade
