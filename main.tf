@@ -22,12 +22,6 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.aks.kube_config[0].cluster_ca_certificate)
 }
 
-resource "kubernetes_namespace" "argocd" {
-  metadata {
-    name = "argocd"
-  }
-}
-
 #######################################################
 resource "azurerm_resource_group" "k8s_rg" {
   name     = "k8s"
@@ -58,7 +52,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = "aks"
   kubernetes_version  = "1.32.6"
 
-  # Enable auto-upgrade via upgrade_channel
   automatic_upgrade_channel  = "patch"  # Options: patch, rapid, node-image, stable
 
   maintenance_window_auto_upgrade {
@@ -95,4 +88,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     dns_service_ip      = "10.96.0.10"
   }
 
+}
+#######################################################
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = "argocd"
+  }
 }
