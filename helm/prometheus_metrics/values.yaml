@@ -1,0 +1,16 @@
+replicaCount: 1
+
+image:
+  repository: quay.io/brancz/prometheus-example-app
+  tag: v0.5.0
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8080
+
+servicemonitor:
+  enabled: false
+  path: /metrics
+  interval: 30s
+
+resources: {}
