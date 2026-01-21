@@ -8,10 +8,10 @@ REQUIRED_VARS=(
   "ARM_CLIENT_SECRET"
   "ARM_SUBSCRIPTION_ID"
   "ARM_TENANT_ID"
-  "BACKEND_ARM_SUBSCRIPTION"
-  "BACKEND_RG_NAME"
-  "BACKEND_SA_NAME"
-  "BACKEND_CONTAINER_NAME"
+  # "BACKEND_ARM_SUBSCRIPTION"
+  # "BACKEND_RG_NAME"
+  # "BACKEND_SA_NAME"
+  # "BACKEND_CONTAINER_NAME"
 )
 
 MISSING_VARS=()
@@ -36,11 +36,14 @@ fi
 # Proceed with terraform init
 echo "✅ All required ARM_* environment variables are set."
 
-# Run terraform init with backend config
-terraform init \
-  -backend-config="subscription_id=$BACKEND_ARM_SUBSCRIPTION" \
-  -backend-config="resource_group_name=$BACKEND_RG_NAME" \
-  -backend-config="storage_account_name=$BACKEND_SA_NAME" \
-  -backend-config="container_name=$BACKEND_CONTAINER_NAME" \
-  -backend-config="key=terraform.tfstate" \
-  -upgrade
+# Run terraform init without backend config
+terraform init  -upgrade
+
+## Run terraform init with backend config
+# terraform init \
+  # -backend-config="subscription_id=$BACKEND_ARM_SUBSCRIPTION" \
+  # -backend-config="resource_group_name=$BACKEND_RG_NAME" \
+  # -backend-config="storage_account_name=$BACKEND_SA_NAME" \
+  # -backend-config="container_name=$BACKEND_CONTAINER_NAME" \
+  # -backend-config="key=terraform.tfstate" \
+  # -upgrade
