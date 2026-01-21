@@ -12,11 +12,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = "aks"
   kubernetes_version  = "1.32.6"
 
-  automatic_upgrade_channel   = "patch"  # Options: patch, rapid, node-image, stable
-  
-  private_cluster_enabled     = false
-  azure_policy_enabled = false
-  local_account_disabled = false
+  automatic_upgrade_channel = "patch" # Options: patch, rapid, node-image, stable
+
+  private_cluster_enabled = false
+  azure_policy_enabled    = false
+  local_account_disabled  = false
 
   maintenance_window_auto_upgrade {
     frequency   = "Weekly"
@@ -34,16 +34,16 @@ resource "azurerm_kubernetes_cluster" "aks" {
     day_of_week = "Sunday"
     start_time  = "23:00"
     utc_offset  = "+02:00"
-  } 
+  }
 
   default_node_pool {
-    name                  = "default"
-    auto_scaling_enabled  = var.aks_auto_scaling_enabled
-    node_count            = var.aks_min_node_count
-    min_count             = var.aks_auto_scaling_enabled == false ? null : var.aks_min_node_count
-    max_count             = var.aks_auto_scaling_enabled == false ? null : var.aks_max_node_count 
-    vm_size               = "Standard_B2s_v2"
-    max_pods              = 50
+    name                 = "default"
+    auto_scaling_enabled = var.aks_auto_scaling_enabled
+    node_count           = var.aks_min_node_count
+    min_count            = var.aks_auto_scaling_enabled == false ? null : var.aks_min_node_count
+    max_count            = var.aks_auto_scaling_enabled == false ? null : var.aks_max_node_count
+    vm_size              = "Standard_B2s_v2"
+    max_pods             = 50
     upgrade_settings {
       drain_timeout_in_minutes      = 0
       max_surge                     = "10%"
@@ -64,7 +64,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   oms_agent {
-    log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
+    log_analytics_workspace_id      = azurerm_log_analytics_workspace.this.id
     msi_auth_for_monitoring_enabled = true
   }
 
@@ -81,10 +81,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   lifecycle {
     ignore_changes = [
-        default_node_pool[0].node_count,
-        default_node_pool[0].tags,
-        maintenance_window_node_os,
-        tags
+      default_node_pool[0].node_count,
+      default_node_pool[0].tags,
+      maintenance_window_node_os,
+      tags
     ]
   }
 }

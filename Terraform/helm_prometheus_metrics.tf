@@ -1,7 +1,7 @@
 resource "helm_release" "prometheus_metrics" {
-  name       = "prometheus_metrics"
-  chart      = "../helm/prometheus_metrics"
-  namespace  = "default"
+  name             = "prometheus-metrics"
+  chart            = "../helm/prometheus_metrics"
+  namespace        = "default"
   create_namespace = true
 
   values = [
@@ -13,10 +13,12 @@ resource "helm_release" "prometheus_metrics" {
       service = {
         port = 8080
       }
-      servicemonitor = {
-        enabled  = false
+      metrics = {
         path     = "/metrics"
         interval = "30s"
+      }
+      servicemonitor = {
+        enabled = false
       }
     })
   ]

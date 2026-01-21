@@ -25,14 +25,14 @@ resource "azurerm_monitor_data_collection_endpoint" "dce" {
 resource "azurerm_monitor_data_collection_rule" "dcr" {
   name                        = "aks-monitor"
   resource_group_name         = azurerm_resource_group.monitoring_rg.name
-  location                     = azurerm_resource_group.monitoring_rg.location
-  data_collection_endpoint_id  = azurerm_monitor_data_collection_endpoint.dce.id
+  location                    = azurerm_resource_group.monitoring_rg.location
+  data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.dce.id
 
   # Define the destinations
   destinations {
     log_analytics {
-      workspace_resource_id  = azurerm_log_analytics_workspace.this.id
-      name = "logAnalyticsWorkspace"
+      workspace_resource_id = azurerm_log_analytics_workspace.this.id
+      name                  = "logAnalyticsWorkspace"
     }
     monitor_account {
       monitor_account_id = azurerm_monitor_workspace.this.id

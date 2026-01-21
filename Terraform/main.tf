@@ -5,7 +5,7 @@ terraform {
       version = "4.44.0"
     }
     random = {
-      source = "hashicorp/random"
+      source  = "hashicorp/random"
       version = "3.8.0"
     }
   }
