@@ -11,6 +11,16 @@ spec:
     metadata:
       labels:
         app: {{ include "myapp.name" . }}
+        # Azure Managed Prometheus
+        azuremonitor.io/scrape: "true"
+        azuremonitor.io/port: "{{ .Values.service.port }}"
+        # Standard Prometheus
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.port }}"
+      annotations:
+        # Metrics paths go in annotations, not labels
+        azuremonitor.io/path: "{{ .Values.metrics.path }}"
+        prometheus.io/path: "{{ .Values.metrics.path }}"
     spec:
       containers:
         - name: app
