@@ -1,27 +1,33 @@
-resource "helm_release" "prometheus_metrics" {
-  name             = "prometheus-metrics"
-  chart            = "../helm/prometheus_metrics"
-  namespace        = "default"
+resource "helm_release" "log_app" {
+  name             = "log-app"
+  chart            = "../helm/logging_app"
+  namespace        = "logs"
   create_namespace = true
 
   values = [
     yamlencode({
       image = {
-        repository = "quay.io/brancz/prometheus-example-app"
-        tag        = "v0.5.0"
+        repository = "python"
+        tag        = "3.12-slim"
       }
+
       service = {
         port = 8080
       }
+
+      logMessage  = "Hello from logginapp!"
+      logInterval = 5
+
       metrics = {
         path     = "/metrics"
-        interval = "30s"
+        interval = "15s"
       }
       servicemonitor = {
         enabled = false
       }
     })
   ]
+
   depends_on = [
     azurerm_kubernetes_cluster.aks
   ]

@@ -55,6 +55,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     type = "SystemAssigned"
   }
 
+  # azure_active_directory_role_based_access_control {
+  #   admin_group_object_ids = var.aks_cluster_admin_groups
+  # }
+
   network_profile {
     network_plugin      = "azure"
     network_plugin_mode = "overlay"
@@ -64,7 +68,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   oms_agent {
-    log_analytics_workspace_id      = azurerm_log_analytics_workspace.this.id
+    log_analytics_workspace_id      = azurerm_log_analytics_workspace.aks_logs.id
     msi_auth_for_monitoring_enabled = true
   }
 
