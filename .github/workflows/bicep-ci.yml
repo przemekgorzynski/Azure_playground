@@ -1,0 +1,51 @@
+name: Bicep CI
+
+on:
+  pull_request:
+    paths:
+      - "Bicep/**/*.bicep"
+      - ".github/workflows/bicep-ci.yml"
+  push:
+    branches: [ main ]
+
+env:
+  CHECKOV_VERSION: "v12"
+
+jobs:
+  bicep:
+    name: Bicep Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ---- Install Bicep CLI ----
+      - name: Install Bicep CLI
+        run: |
+          curl -Lo bicep https://github.com/Azure/bicep/releases/latest/download/bicep-linux-x64
+          chmod +x bicep
+          sudo mv bicep /usr/local/bin/
+
+      # ---- Bicep Syntax Check ----
+      - name: Check Bicep Syntax
+        run: |
+          for f in $(find Bicep -name "*.bicep"); do
+            echo "Checking $f"
+            bicep build "$f" --stdout
+          done
+
+      # ---- Checkov Scan (Bicep → ARM JSON) ----
+      - name: Run Checkov on Bicep
+        run: |
+          TMP_DIR=$(mktemp -d)
+          for f in $(find Bicep -name "*.bicep"); do
+            bicep build "$f" --outdir "$TMP_DIR"
+          done
+          echo "Running Checkov..."
+        uses: bridgecrewio/checkov-action@${{ env.CHECKOV_VERSION }}
+        with:
+          directory: ${{ runner.temp }}
+          framework: arm
+          quiet: true
+          soft_fail: false

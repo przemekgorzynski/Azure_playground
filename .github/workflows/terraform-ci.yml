@@ -1,20 +1,16 @@
 name: Terraform CI
 
-# on:
-#   pull_request:
-#     paths:
-#       - "**/*.tf"
-#       - ".github/workflows/terraform-ci.yml"
-#   push:
-#     branches: [ main ]
-
 on:
-  push:
-    branches: 
-      - '**'   # any branch
   pull_request:
-    branches:
-      - '**'   # any PR to any branch
+    paths:
+      - "**/*.tf"
+      - ".github/workflows/terraform-ci.yml"
+  push:
+    branches: [ main ]
+
+env:
+  CHECKOV_VERSION: "v12"
+  TRIVY_ACTION_VERSION: "0.20.0"
 
 jobs:
   terraform:
@@ -45,19 +41,19 @@ jobs:
 
       # ---- Checkov Scan ----
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@v12
+        uses: bridgecrewio/checkov-action@${{ env.CHECKOV_VERSION }}
         with:
-          directory: .
+          directory: Terraform
           framework: terraform
           quiet: true
           soft_fail: false
 
       # ---- Trivy Terraform Scan ----
       - name: Run Trivy IaC Scan
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@${{ env.TRIVY_ACTION_VERSION }}
         with:
           scan-type: config
-          scan-ref: .
+          scan-ref: Terraform
           format: table
           exit-code: 1
           severity: HIGH,CRITICAL

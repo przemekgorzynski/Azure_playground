@@ -1,0 +1,50 @@
+name: Helm CI
+
+on:
+  pull_request:
+    paths:
+      - "helm/**"
+      - ".github/workflows/helm-ci.yml"
+  push:
+    branches: [ main ]
+
+env:
+  TRIVY_ACTION_VERSION: "0.20.0"
+
+jobs:
+  helm:
+    name: Helm Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ---- Helm Setup ----
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+
+      # ---- Helm Lint ----
+      - name: Helm Lint
+        run: |
+          for chart in helm/*; do
+            if [ -d "$chart" ]; then
+              helm lint "$chart"
+            fi
+          done
+
+      # ---- YAML Lint ----
+      - name: YAML Lint
+        uses: ibiqlik/action-yamllint@v1
+        with:
+          directory: helm
+
+      # ---- Trivy Scan ----
+      - name: Trivy Helm Scan
+        uses: aquasecurity/trivy-action@${{ env.TRIVY_ACTION_VERSION }}
+        with:
+          scan-type: config
+          scan-ref: helm
+          format: table
+          exit-code: 1
+          severity: HIGH,CRITICAL
