@@ -1,0 +1,55 @@
+name: Terraform CI
+
+# on:
+#   pull_request:
+#     paths:
+#       - "**/*.tf"
+#       - ".github/workflows/terraform-ci.yml"
+#   push:
+#     branches: [ main ]
+
+jobs:
+  terraform:
+    name: Terraform Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # ---- Terraform Setup ----
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      # ---- Terraform Format ----
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      # ---- Terraform Init ----
+      - name: Terraform init
+        run: terraform init -backend=false
+
+      # ---- Terraform Validate ----
+      - name: Terraform validate
+        run: terraform validate
+
+      # ---- Checkov Scan ----
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          quiet: true
+          soft_fail: false
+
+      # ---- Trivy Terraform Scan ----
+      - name: Run Trivy IaC Scan
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          scan-type: config
+          scan-ref: .
+          format: table
+          exit-code: 1
+          severity: HIGH,CRITICAL
