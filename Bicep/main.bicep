@@ -94,7 +94,7 @@ module privateDns './modules/privateDnsZone.bicep' = [for zone in PrivateDnsZone
     location: 'global'
     vnetName: vnetModule.outputs.name
     vnetID: vnetModule.outputs.id
-    autoDnsRegistration: zone.autoRegistration  // <-- now works
+    autoDnsRegistration: zone.autoRegistration
     tags: union(tags, {
       Resource: 'Private DNS Zone'
       PrivateZone: zone.name

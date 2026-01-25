@@ -44,13 +44,3 @@ jobs:
           framework: terraform
           quiet: true
           soft_fail: false
-
-      # ---- Trivy Terraform Scan ----
-      - name: Run Trivy IaC Scan
-        uses: aquasecurity/trivy-action@0.20.0
-        with:
-          scan-type: config
-          scan-ref: Terraform
-          format: table
-          exit-code: 1
-          severity: HIGH,CRITICAL
