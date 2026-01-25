@@ -7,6 +7,7 @@ on:
       - ".github/workflows/bicep-ci.yml"
   push:
     branches: [ main ]
+  workflow_dispatch: 
 
 jobs:
   bicep:

@@ -7,6 +7,7 @@ on:
       - ".github/workflows/helm-ci.yml"
   push:
     branches: [ main ]
+  workflow_dispatch: 
 
 env:
   TRIVY_ACTION_VERSION: "0.20.0"
