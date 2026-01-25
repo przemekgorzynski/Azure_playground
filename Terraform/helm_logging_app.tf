@@ -1,6 +1,6 @@
 resource "helm_release" "log_app" {
   name             = "log-app"
-  chart            = "../helm/logging_app"
+  chart            = "../Helm/logging_app"
   namespace        = "logs"
   create_namespace = true
 

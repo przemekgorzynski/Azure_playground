@@ -3,3 +3,4 @@ name: log-producer
 description: A simple app that produces logs
 version: 0.1.0
 appVersion: "1.0"
+icon: https://raw.githubusercontent.com/helm/charts/main/icons/helm.png

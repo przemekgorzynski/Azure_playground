@@ -1,6 +1,6 @@
 resource "helm_release" "prometheus_metrics_app" {
   name             = "prometheus-metrics-app"
-  chart            = "../helm/metrics_app"
+  chart            = "../Helm/metrics_app"
   namespace        = "metrics"
   create_namespace = true
 
