@@ -8,9 +8,6 @@ on:
   push:
     branches: [ main ]
 
-env:
-  CHECKOV_VERSION: "v12"
-
 jobs:
   bicep:
     name: Bicep Checks
@@ -38,18 +35,16 @@ jobs:
       # ---- Convert Bicep to ARM JSON ----
       - name: Build Bicep to ARM JSON
         run: |
-          TMP_DIR=$(mktemp -d)
+          mkdir -p arm_json
           for f in $(find Bicep -name "*.bicep"); do
-            bicep build "$f" --outdir "$TMP_DIR"
+            bicep build "$f" --outdir arm_json
           done
-          echo "ARM JSON files ready in $TMP_DIR"
-        id: bicep_build
 
       # ---- Checkov Scan on ARM JSON ----
       - name: Run Checkov on Bicep/ARM
-        uses: bridgecrewio/checkov-action@${{ env.CHECKOV_VERSION }}
+        uses: bridgecrewio/checkov-action@v12
         with:
-          directory: ${{ steps.bicep_build.outputs.TMP_DIR || '' }}
+          directory: arm_json
           framework: arm
           quiet: true
           soft_fail: false
