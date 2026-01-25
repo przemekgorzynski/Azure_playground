@@ -35,17 +35,21 @@ jobs:
             bicep build "$f" --stdout
           done
 
-      # ---- Checkov Scan (Bicep → ARM JSON) ----
-      - name: Run Checkov on Bicep
+      # ---- Convert Bicep to ARM JSON ----
+      - name: Build Bicep to ARM JSON
         run: |
           TMP_DIR=$(mktemp -d)
           for f in $(find Bicep -name "*.bicep"); do
             bicep build "$f" --outdir "$TMP_DIR"
           done
-          echo "Running Checkov..."
+          echo "ARM JSON files ready in $TMP_DIR"
+        id: bicep_build
+
+      # ---- Checkov Scan on ARM JSON ----
+      - name: Run Checkov on Bicep/ARM
         uses: bridgecrewio/checkov-action@${{ env.CHECKOV_VERSION }}
         with:
-          directory: ${{ runner.temp }}
+          directory: ${{ steps.bicep_build.outputs.TMP_DIR || '' }}
           framework: arm
           quiet: true
           soft_fail: false

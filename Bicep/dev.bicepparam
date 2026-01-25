@@ -52,3 +52,4 @@ param PrivateDnsZones = [
     autoRegistration: false
   }
 ]
+
