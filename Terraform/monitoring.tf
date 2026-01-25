@@ -46,12 +46,12 @@ resource "azurerm_monitor_data_collection_rule_association" "aks_logs" {
 }
 
 
-############################
-resource "azurerm_monitor_workspace" "aks_metrics" {
-  name                = "aks-metrics"
-  resource_group_name = azurerm_resource_group.monitoring_rg.name
-  location            = azurerm_resource_group.monitoring_rg.location
-  tags = {
-    key = "value"
-  }
-}
+# ############################
+# resource "azurerm_monitor_workspace" "aks_metrics" {
+#   name                = "aks-metrics"
+#   resource_group_name = azurerm_resource_group.monitoring_rg.name
+#   location            = azurerm_resource_group.monitoring_rg.location
+#   tags = {
+#     key = "value"
+#   }
+# }
