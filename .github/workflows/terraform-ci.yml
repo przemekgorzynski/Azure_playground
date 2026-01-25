@@ -7,11 +7,7 @@ on:
       - ".github/workflows/terraform-ci.yml"
   push:
     branches: [ main ]
-  workflow_dispatch: 
-
-env:
-  CHECKOV_VERSION: "v12"
-  TRIVY_ACTION_VERSION: "0.20.0"
+  workflow_dispatch:  # manual trigger
 
 jobs:
   terraform:
@@ -42,7 +38,7 @@ jobs:
 
       # ---- Checkov Scan ----
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@${{ env.CHECKOV_VERSION }}
+        uses: bridgecrewio/checkov-action@v12
         with:
           directory: Terraform
           framework: terraform
@@ -51,7 +47,7 @@ jobs:
 
       # ---- Trivy Terraform Scan ----
       - name: Run Trivy IaC Scan
-        uses: aquasecurity/trivy-action@${{ env.TRIVY_ACTION_VERSION }}
+        uses: aquasecurity/trivy-action@0.20.0
         with:
           scan-type: config
           scan-ref: Terraform
