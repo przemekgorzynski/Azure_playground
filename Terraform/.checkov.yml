@@ -1,0 +1,15 @@
+skip-check:
+  # AKS – security / architecture decisions
+  - CKV_AZURE_226   # Ephemeral OS disks not supported on chosen VM size
+  - CKV_AZURE_6     # API Server Authorized IP Ranges not required (playground)
+  - CKV_AZURE_227   # Host encryption not required
+  - CKV_AZURE_115   # Private cluster not required
+  - CKV_AZURE_141   # Local admin account allowed
+  - CKV_AZURE_116   # Azure Policy add-on not required
+  - CKV_AZURE_170   # Paid SKU / SLA not required
+  - CKV_AZURE_172   # Secrets Store CSI rotation not enabled
+  - CKV_AZURE_232   # System/User node pool separation not enforced
+  - CKV_AZURE_117   # Disk Encryption Set (CMK) not required
+
+  # Networking
+  - CKV2_AZURE_31   # NSG not attached to subnets

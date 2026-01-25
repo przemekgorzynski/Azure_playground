@@ -11,6 +11,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   node_resource_group = "aks_nodes"
   dns_prefix          = "aks"
   kubernetes_version  = "1.32.6"
+  sku_tier            = "Free"
 
   automatic_upgrade_channel = "patch" # Options: patch, rapid, node-image, stable
 
@@ -62,13 +63,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   network_profile {
     network_plugin      = "azure"
     network_plugin_mode = "overlay"
+    network_policy      = "azure"
     pod_cidr            = "10.244.0.0/16"
     service_cidr        = "10.96.0.0/12"
     dns_service_ip      = "10.96.0.10"
   }
 
   oms_agent {
-    log_analytics_workspace_id      = azurerm_log_analytics_workspace.aks_logs.id
+    log_analytics_workspace_id      = azurerm_log_analytics_workspace.aks_law.id
     msi_auth_for_monitoring_enabled = true
   }
 
@@ -79,7 +81,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
-  monitor_metrics {}  # Cluster-level metrics
+  # Cluster-level metrics
+  monitor_metrics {
+    annotations_allowed = null
+    labels_allowed      = null
+  }
 
   tags = {
     Environment = "Playground"

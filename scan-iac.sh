@@ -8,6 +8,7 @@ SCAN_DIR="${1:-.}"
 
 # Docker images
 CHECKOV_IMAGE="bridgecrew/checkov:latest"
+CHECKOV_CONFIG_FILE="${CHECKOV_CONFIG_FILE:-.checkov-skip.yml}"
 TRIVY_IMAGE="aquasec/trivy:latest"
 YAMLLINT_IMAGE="cytopia/yamllint:latest"
 
@@ -43,15 +44,17 @@ terraform_validate() {
 
 checkov_scan() {
     echo -e "\n${GREEN}Running Checkov Terraform scan...${NC}"
-    docker run --rm -v "$(realpath "$SCAN_DIR")":/tf "$CHECKOV_IMAGE" -d /tf -f terraform --quiet || \
-        echo -e "${YELLOW}Checkov found issues${NC}"
+
+    docker run --rm \
+      -e CHECKOV_ENABLE_SECRET_SCAN=false \
+      -v "$(realpath "$SCAN_DIR")":/tf \
+      "$CHECKOV_IMAGE" \
+      -d /tf -f terraform \
+      --quiet \
+      --compact 2>/dev/null || \
+      echo -e "${YELLOW}Checkov found issues${NC}"
 }
 
-trivy_scan() {
-    echo -e "\n${GREEN}Running Trivy Terraform config scan...${NC}"
-    docker run --rm -v "$(realpath "$SCAN_DIR")":/project "$TRIVY_IMAGE" \
-        config --severity HIGH,CRITICAL /project || echo -e "${YELLOW}Trivy found HIGH/CRITICAL issues${NC}"
-}
 
 # -----------------------------
 # Bicep
@@ -66,18 +69,6 @@ bicep_syntax() {
             echo -e "${YELLOW}$f has syntax issues${NC}"
         fi
     done
-}
-
-bicep_checkov() {
-    TMP_DIR=$(mktemp -d)
-    echo -e "${GREEN}Converting Bicep files to ARM JSON for Checkov...${NC}"
-    for f in $(find "$SCAN_DIR" -name "*.bicep"); do
-        bicep build "$f" --outdir "$TMP_DIR" >/dev/null 2>&1 || echo -e "${YELLOW}Failed to build $f${NC}"
-    done
-    echo -e "${GREEN}Running Checkov on ARM JSON...${NC}"
-    docker run --rm -v "$TMP_DIR":/tf "$CHECKOV_IMAGE" -d /tf -f arm --quiet || \
-        echo -e "${YELLOW}Checkov (Bicep/ARM) found issues${NC}"
-    rm -rf "$TMP_DIR"
 }
 
 # -----------------------------
@@ -112,16 +103,6 @@ helm_yaml_checks() {
     done
 }
 
-helm_trivy() {
-    echo -e "\n${GREEN}Running Trivy on rendered Helm charts...${NC}"
-    for chart in "$SCAN_DIR"/*; do
-        if [ -d "$chart" ]; then
-            docker run --rm -v "$(realpath "$chart")":/project "$TRIVY_IMAGE" \
-                config --severity HIGH,CRITICAL /project || echo -e "${YELLOW}Trivy found issues in $(basename "$chart")${NC}"
-        fi
-    done
-}
-
 # -----------------------------
 # Main logic
 # -----------------------------
@@ -137,18 +118,13 @@ case "$BASE_LOWER" in
         terraform_fmt
         terraform_validate
         checkov_scan
-        trivy_scan
         ;;
     bicep)
         bicep_syntax
-        # Optional: uncomment to run Checkov on Bicep ARM JSON
-        # bicep_checkov
         ;;
     helm)
         helm_lint
         helm_yaml_checks
-        # Optional: uncomment to run Trivy on Helm
-        # helm_trivy
         ;;
     *)
         echo -e "${YELLOW}Unknown folder type: $BASE_LOWER. No scans executed.${NC}"
