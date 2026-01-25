@@ -79,7 +79,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
-  #monitor_metrics {}  # Cluster-level metrics
+  monitor_metrics {}  # Cluster-level metrics
 
   tags = {
     Environment = "Playground"
