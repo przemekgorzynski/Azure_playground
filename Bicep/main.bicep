@@ -102,17 +102,17 @@ module privateDns './modules/privateDnsZone.bicep' = [for zone in PrivateDnsZone
   }
 }]
 
-module web './modules/webapp.bicep' = {
-  name: 'webapp'
-  scope: resourceGroup(rgName)
-  params: {
-    appServicePlanName: 'appservice'
-    location: rgModule.outputs.location
-    tags: union(tags, {
-      Resource: 'Web App'
-    })
+// module web './modules/webapp.bicep' = {
+//   name: 'webapp'
+//   scope: resourceGroup(rgName)
+//   params: {
+//     appServicePlanName: 'appservice'
+//     location: rgModule.outputs.location
+//     tags: union(tags, {
+//       Resource: 'Web App'
+//     })
 
-    webAppName: 'myapp-${uniqueString(resourceGroup().id)}'
-    appServicePlanName: 'asp-myapp'
-  }
-}
+//     webAppName: 'myapp-${uniqueString(resourceGroup().id)}'
+//     appServicePlanName: 'asp-myapp'
+//   }
+// }
