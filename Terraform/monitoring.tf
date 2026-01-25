@@ -15,7 +15,7 @@ resource "azurerm_monitor_data_collection_rule" "aks_logs" {
 
   data_flow {
     destinations = ["ciworkspace"]
-    streams      = ["Microsoft-ContainerLog", "Microsoft-ContainerLogV2", "Microsoft-KubeEvents", "Microsoft-KubePodInventory"]
+    streams      = ["Microsoft-ContainerLogV2", "Microsoft-KubeEvents", "Microsoft-KubePodInventory"]
   }
   data_sources {
     extension {
