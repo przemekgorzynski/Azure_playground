@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "myapp.fullname" . }}
+  labels:
+    app: {{ include "myapp.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "myapp.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "myapp.name" . }}
+    spec:
+      containers:
+        - name: {{ include "myapp.name" . }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          command: ["python", "-u", "-c"]
+          args:
+            - |
+              import time
+              import os
+              import random
+              msg = os.getenv("LOG_MESSAGE", "Hello from logginapp!")
+              interval = int(os.getenv("LOG_INTERVAL", 5))
+              levels = ["INFO", "WARN", "ERROR"]
+              while True:
+                  level = random.choice(levels)
+                  print(f"[{level}] {msg}")
+                  time.sleep(interval)
+          env:
+            - name: LOG_MESSAGE
+              value: "{{ .Values.logMessage }}"
+            - name: LOG_INTERVAL
+              value: "{{ .Values.logInterval }}"

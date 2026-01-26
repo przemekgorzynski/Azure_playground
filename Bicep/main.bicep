@@ -94,7 +94,7 @@ module privateDns './modules/privateDnsZone.bicep' = [for zone in PrivateDnsZone
     location: 'global'
     vnetName: vnetModule.outputs.name
     vnetID: vnetModule.outputs.id
-    autoDnsRegistration: zone.autoRegistration  // <-- now works
+    autoDnsRegistration: zone.autoRegistration
     tags: union(tags, {
       Resource: 'Private DNS Zone'
       PrivateZone: zone.name
@@ -102,17 +102,17 @@ module privateDns './modules/privateDnsZone.bicep' = [for zone in PrivateDnsZone
   }
 }]
 
-module web './modules/webapp.bicep' = {
-  name: 'webapp'
-  scope: resourceGroup(rgName)
-  params: {
-    appServicePlanName: 'appservice'
-    location: rgModule.outputs.location
-    tags: union(tags, {
-      Resource: 'Web App'
-    })
+// module web './modules/webapp.bicep' = {
+//   name: 'webapp'
+//   scope: resourceGroup(rgName)
+//   params: {
+//     appServicePlanName: 'appservice'
+//     location: rgModule.outputs.location
+//     tags: union(tags, {
+//       Resource: 'Web App'
+//     })
 
-    webAppName: 'myapp-${uniqueString(resourceGroup().id)}'
-    appServicePlanName: 'asp-myapp'
-  }
-}
+//     webAppName: 'myapp-${uniqueString(resourceGroup().id)}'
+//     appServicePlanName: 'asp-myapp'
+//   }
+// }

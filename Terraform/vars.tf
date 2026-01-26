@@ -1,13 +1,15 @@
 
-variable "cf_api_token" {
-  description = "Cloudflare API token"
-  type        = string
-  sensitive   = true
-  default     = ""   # optional, can be empty if always reading from env
+variable "aks_auto_scaling_enabled" {
+  type    = bool
+  default = false
 }
 
-variable "cf_zone_id" {
-  description = "Cloudflare Zone ID"
-  type        = string
-  default     = ""
+variable "aks_min_node_count" {
+  type    = number
+  default = 1
+}
+
+variable "aks_max_node_count" {
+  type    = number
+  default = 3
 }
