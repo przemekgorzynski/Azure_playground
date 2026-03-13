@@ -2,8 +2,8 @@ targetScope = 'tenant'
 
 // Subscriptions variables
 param billingAccountName string
-param billingProfileName string      // ← updated
-param invoiceSectionName string      // ← updated
+param billingProfileName string
+param invoiceSectionName string
 param managementGroupId string 
 param managementSubscriptionName string
 param Spoke1SubscriptionName string
