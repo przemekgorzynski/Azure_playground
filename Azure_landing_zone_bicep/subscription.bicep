@@ -6,10 +6,24 @@ param billingProfileName string      // ← updated
 param invoiceSectionName string      // ← updated
 param managementGroupId string 
 param managementSubscriptionName string
-param TFstateSubscriptionName string
 param Spoke1SubscriptionName string
+param Spoke2SubscriptionName string
 
-// Management Subscription
+// param TFstateSubscriptionName string
+
+// Terraform State subscription
+// module tfstatesSub '../modules/bicep/subscription.bicep' = {
+//   name: 'deploy-tfstates-subscription'
+//   params: {
+//     subscriptionName: TFstateSubscriptionName
+//     billingAccountName: billingAccountName
+//     billingProfileName: billingProfileName
+//     invoiceSectionName: invoiceSectionName
+//     managementGroupId: managementGroupId
+//   }
+// }
+
+// Management / Hub Subscription
 module managementSub '../modules/bicep/subscription.bicep' = {
   name: 'deploy-management-subscription'
   params: {
@@ -21,10 +35,10 @@ module managementSub '../modules/bicep/subscription.bicep' = {
   }
 }
 
-module tfstatesSub '../modules/bicep/subscription.bicep' = {
-  name: 'deploy-tfstates-subscription'
+module Spoke1Sub '../modules/bicep/subscription.bicep' = {
+  name: 'deploy-spoke1-subscription'
   params: {
-    subscriptionName: TFstateSubscriptionName
+    subscriptionName: Spoke1SubscriptionName
     billingAccountName: billingAccountName
     billingProfileName: billingProfileName
     invoiceSectionName: invoiceSectionName
@@ -32,10 +46,10 @@ module tfstatesSub '../modules/bicep/subscription.bicep' = {
   }
 }
 
-module Spoke1Sub '../modules/bicep/subscription.bicep' = {
-  name: 'deploy-spoke1-subscription'
+module Spoke2Sub '../modules/bicep/subscription.bicep' = {
+  name: 'deploy-spoke2-subscription'
   params: {
-    subscriptionName: Spoke1SubscriptionName
+    subscriptionName: Spoke2SubscriptionName
     billingAccountName: billingAccountName
     billingProfileName: billingProfileName
     invoiceSectionName: invoiceSectionName
