@@ -7,16 +7,15 @@ param invoiceSectionName string
 param managementGroupId string
 
 var billingScope = '/providers/Microsoft.Billing/billingAccounts/${billingAccountName}/billingProfiles/${billingProfileName}/invoiceSections/${invoiceSectionName}'
-var mgmntGroup   = '/providers/Microsoft.Management/managementGroups/${managementGroupId}'
 
-resource subscription 'Microsoft.Subscription/aliases@2025-11-01-preview' = {
+resource subscription 'Microsoft.Subscription/aliases@2021-10-01' = {
   name: subscriptionName
   properties: {
     workload: 'Production'
     displayName: subscriptionName
     billingScope: billingScope
     additionalProperties: {
-      managementGroupId: mgmntGroup
+      managementGroupId: '/providers/Microsoft.Management/managementGroups/${managementGroupId}'
     }
   }
 }
