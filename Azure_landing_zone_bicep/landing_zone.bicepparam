@@ -32,6 +32,13 @@ param HubSubnets = [
   }
 ]
 
+param PrivateDnsZones = [
+  {
+    name: 'privatelink.blob.core.windows.net'
+    autoRegistration: true
+  }
+]
+
 
 // Spoke 1 Subscription
 param Spoke1VnetAddressPrefix  = '10.1.0.0/16'

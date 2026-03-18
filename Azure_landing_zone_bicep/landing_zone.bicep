@@ -15,11 +15,14 @@ param Spoke1VnetAddressPrefix string
 param Spoke2VnetAddressPrefix string
 
 param HubSubnets array
+param PrivateDnsZones array
 param Spoke1Subnets array
 param Spoke2Subnets array
 
+
 //RG
 var RgNameVnetHub     = 'rg-VnetHub-${orgPrefix}-${regionSh}'
+var RgNameDnsHub      = 'rg-DnsHub-${orgPrefix}-${regionSh}'
 var RgNameVnetSpoke1  = 'rg-VnetSpoke1-${orgPrefix}-${regionSh}'
 var RgNameVnetSpoke2  = 'rg-VnetSpoke2-${orgPrefix}-${regionSh}'
 // var TfStateRgName     = 'rg-TfState-${orgPrefix}-${regionSh}'
@@ -49,6 +52,20 @@ module RgHubVnet '../modules/bicep/rg.bicep' = {
   }
 }
 
+module RgHubPrivateDnsZones '../modules/bicep/rg.bicep' = {
+  name: 'createResourceGroup-hub-dnz-zones'
+  scope: subscription(MgmntSubscriptionId)
+  params: {
+    rgName: RgNameDnsHub
+    rgLocation: location
+    tags: {
+      Resource: 'Resource Group'
+      ...tags
+    }
+  }
+}
+
+
 // vnet resource
 module VnetHub '../modules/bicep/vnet.bicep' = {
   name: 'createVnet-hub'
@@ -77,6 +94,22 @@ module HubSubnet '../modules/bicep/subnet.bicep' = [for s in HubSubnets: {
   dependsOn: [
     VnetHub
   ]
+}]
+
+module privateDns '../modules/bicep/privateDnsZone.bicep' = [for zone in PrivateDnsZones: {
+  name: 'privateDns-${zone.name}'  // unique module name
+  scope: resourceGroup(RgNameDnsHub)
+  params: {
+    zoneName: zone.name
+    location: 'global'
+    vnetName: VnetHub.outputs.name
+    vnetID: VnetHub.outputs.id
+    autoDnsRegistration: zone.autoRegistration
+    tags: union(tags, {
+      Resource: 'Private DNS Zone'
+      PrivateZone: zone.name
+    })
+  }
 }]
 
 
