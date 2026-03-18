@@ -11,6 +11,13 @@ param tags = {
   createdBy: 'bicep'
 }
 
+param ServicePrincipalObjectID  = '5574f1c9-00d5-443c-aed1-a24ed2a017a0'
+param RoleDefinitionID          = '8e3af657-a8ff-443c-a75c-2fe8c4bcb635' //Owner
+param principalType             = 'ServicePrincipal'
+
+// b24988ac-6180-42a0-ab88-20f7382dd24c Contributor
+
+
 // Subscriptions
 // param TsStateSubscriptionId = 'ba1161d8-2a27-4a39-b71b-b1f52da5b493'
 param MgmntSubscriptionId   = '498ff788-a1a1-4860-a97f-3ee90d4fab61'
@@ -35,7 +42,7 @@ param HubSubnets = [
 param PrivateDnsZones = [
   {
     name: 'privatelink.blob.core.windows.net'
-    autoRegistration: true
+    autoRegistration: false
   }
 ]
 

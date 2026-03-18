@@ -5,6 +5,10 @@ param location string
 param regionSh string
 param tags object
 
+param ServicePrincipalObjectID string
+param RoleDefinitionID string
+param principalType string
+
 // param TsStateSubscriptionId string
 param MgmntSubscriptionId string
 param Spoke1SubscriptionId string
@@ -33,6 +37,39 @@ var Spoke1VnetName  = 'vnet-spoke1-${orgPrefix}-${regionSh}'
 var Spoke2VnetName  = 'vnet-spoke2-${orgPrefix}-${regionSh}'
 
 
+//////////////////////////////////////////////////////////
+/////////////////////////// SP ROLE //////////////////////
+//////////////////////////////////////////////////////////
+
+module spRoleAssignmentMgmnt '../modules/bicep/roleAssignment.bicep' = {
+  name: 'spRoleAssignment-mgmnt'
+  scope: subscription(MgmntSubscriptionId)
+  params: {
+    principalId: ServicePrincipalObjectID
+    roleDefinitionId: RoleDefinitionID
+    principalType: principalType
+  }
+}
+
+module spRoleAssignmentSpoke1 '../modules/bicep/roleAssignment.bicep' = {
+  name: 'spRoleAssignment-spoke1'
+  scope: subscription(Spoke1SubscriptionId)
+  params: {
+    principalId: ServicePrincipalObjectID
+    roleDefinitionId: RoleDefinitionID
+    principalType: principalType
+  }
+}
+
+module spRoleAssignmentSpoke2 '../modules/bicep/roleAssignment.bicep' = {
+  name: 'spRoleAssignment-spoke2'
+  scope: subscription(Spoke2SubscriptionId)
+  params: {
+    principalId: ServicePrincipalObjectID
+    roleDefinitionId: RoleDefinitionID
+    principalType: principalType
+  }
+}
 
 //////////////////////////////////////////////////////////
 /////////////////////////// HUB //////////////////////////
@@ -82,6 +119,7 @@ module VnetHub '../modules/bicep/vnet.bicep' = {
 }
 
 // subnets
+@batchSize(1)  // 👈 deploy one subnet at a time
 module HubSubnet '../modules/bicep/subnet.bicep' = [for s in HubSubnets: {
   name: 'createSubnet-${s.name}'
   scope: resourceGroup(MgmntSubscriptionId, RgNameVnetHub)
@@ -98,7 +136,7 @@ module HubSubnet '../modules/bicep/subnet.bicep' = [for s in HubSubnets: {
 
 module privateDns '../modules/bicep/privateDnsZone.bicep' = [for zone in PrivateDnsZones: {
   name: 'privateDns-${zone.name}'  // unique module name
-  scope: resourceGroup(RgNameDnsHub)
+  scope: resourceGroup(MgmntSubscriptionId, RgNameDnsHub)
   params: {
     zoneName: zone.name
     location: 'global'
@@ -170,6 +208,7 @@ module spoke1RouteTable '../modules/bicep/networkRouteTable.bicep' = {
 }
 
 // subnets
+@batchSize(1)  // 👈 deploy one subnet at a time
 module Spoke1Subnet '../modules/bicep/subnet.bicep' = [for s in Spoke1Subnets: {
   name: 'createSubnet-${s.name}'
   scope: resourceGroup(Spoke1SubscriptionId, RgNameVnetSpoke1)
@@ -189,7 +228,10 @@ module Spoke1Subnet '../modules/bicep/subnet.bicep' = [for s in Spoke1Subnets: {
 module peeringHubToSpoke1 '../modules/bicep/peering.bicep' = {
   name: 'peering-hub-to-spoke1'
   scope: resourceGroup(MgmntSubscriptionId, RgNameVnetHub)
-  dependsOn: [VnetHub]
+  dependsOn: [
+    VnetHub
+    HubSubnet
+  ]
   params: {
     localVnetName: HubVnetName
     remoteVnetId: VnetSpoke1.outputs.id
@@ -200,7 +242,10 @@ module peeringHubToSpoke1 '../modules/bicep/peering.bicep' = {
 module peeringSpoke1ToHub '../modules/bicep/peering.bicep' = {
   name: 'peering-spoke1-to-hub'
   scope: resourceGroup(Spoke1SubscriptionId, RgNameVnetSpoke1)
-  dependsOn: [VnetSpoke1]
+  dependsOn: [
+    VnetSpoke1
+    Spoke1Subnet
+  ]
   params: {
     localVnetName: Spoke1VnetName
     remoteVnetId: VnetHub.outputs.id
@@ -265,6 +310,7 @@ module spoke2RouteTable '../modules/bicep/networkRouteTable.bicep' = {
 }
 
 // subnets
+@batchSize(1)  // 👈 deploy one subnet at a time
 module Spoke2Subnet '../modules/bicep/subnet.bicep' = [for s in Spoke2Subnets: {
   name: 'createSubnet-${s.name}'
   scope: resourceGroup(Spoke2SubscriptionId, RgNameVnetSpoke2)
@@ -284,7 +330,10 @@ module Spoke2Subnet '../modules/bicep/subnet.bicep' = [for s in Spoke2Subnets: {
 module peeringHubToSpoke2 '../modules/bicep/peering.bicep' = {
   name: 'peering-hub-to-spoke2'
   scope: resourceGroup(MgmntSubscriptionId, RgNameVnetHub)
-  dependsOn: [VnetHub]
+  dependsOn: [
+    VnetHub
+    HubSubnet
+  ]
   params: {
     localVnetName: HubVnetName
     remoteVnetId: VnetSpoke2.outputs.id
@@ -295,7 +344,10 @@ module peeringHubToSpoke2 '../modules/bicep/peering.bicep' = {
 module peeringSpoke2ToHub '../modules/bicep/peering.bicep' = {
   name: 'peering-spoke2-to-hub'
   scope: resourceGroup(Spoke2SubscriptionId, RgNameVnetSpoke2)
-  dependsOn: [VnetSpoke2]
+  dependsOn: [
+    VnetSpoke2
+    Spoke2Subnet
+  ]
   params: {
     localVnetName: Spoke2VnetName
     remoteVnetId: VnetHub.outputs.id
