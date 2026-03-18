@@ -37,4 +37,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 .env
-hashicorp/
+**/hashicorp/
+**/.terraform/
