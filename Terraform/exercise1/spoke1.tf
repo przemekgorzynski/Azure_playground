@@ -1,58 +1,58 @@
 # Read existing VNet
 data "azurerm_virtual_network" "vnet-spoke1" {
-  provider              = azurerm.spoke1
-  name                  = "vnet-spoke1-internal-we"
-  resource_group_name   = "rg-VnetSpoke1-internal-we"
+  provider            = azurerm.spoke1
+  name                = "vnet-spoke1-internal-we"
+  resource_group_name = "rg-VnetSpoke1-internal-we"
 }
 
 # Read existing Subnet
 data "azurerm_subnet" "subnet-01-spoke1" {
-  provider              = azurerm.spoke1
-  name                  = "subnet-01"
-  virtual_network_name  = data.azurerm_virtual_network.vnet-spoke1.name
-  resource_group_name   = "rg-VnetSpoke1-internal-we"
+  provider             = azurerm.spoke1
+  name                 = "subnet-01"
+  virtual_network_name = data.azurerm_virtual_network.vnet-spoke1.name
+  resource_group_name  = "rg-VnetSpoke1-internal-we"
 }
 
 data "azurerm_subnet" "subnet-02-spoke1" {
-  provider              = azurerm.spoke1
-  name                  = "subnet-02"
-  virtual_network_name  = data.azurerm_virtual_network.vnet-spoke1.name
-  resource_group_name   = "rg-VnetSpoke1-internal-we"
+  provider             = azurerm.spoke1
+  name                 = "subnet-02"
+  virtual_network_name = data.azurerm_virtual_network.vnet-spoke1.name
+  resource_group_name  = "rg-VnetSpoke1-internal-we"
 }
 
 # RG
 resource "azurerm_resource_group" "rg_spoke1" {
-  provider  = azurerm.spoke1
-  name      = "rg-storage-account-spoke1"
-  location  = "westeurope"
+  provider = azurerm.spoke1
+  name     = "rg-storage-account-spoke1"
+  location = "westeurope"
 }
 
 resource "random_string" "suffix-spoke1" {
-  length    = 12
-  upper     = false
-  special   = false
+  length  = 12
+  upper   = false
+  special = false
 }
 
 resource "azurerm_storage_account" "sa-spoke1" {
-  provider                         = azurerm.spoke1
-  name                             = "st${random_string.suffix-spoke1.result}"
-  resource_group_name              = azurerm_resource_group.rg_spoke1.name
-  location                         = azurerm_resource_group.rg_spoke1.location
-  account_tier                     = "Standard"
-  account_replication_type         = "LRS"
-  account_kind                     = "StorageV2"
-  access_tier                      = "Cool"
-  public_network_access_enabled    = false
-  allow_nested_items_to_be_public  = false
-  cross_tenant_replication_enabled = false
-  shared_access_key_enabled        = true
-  https_traffic_only_enabled       = true
-  min_tls_version                  = "TLS1_2"
-  sftp_enabled                     = false
-  nfsv3_enabled                    = false
-  is_hns_enabled                   = false
+  provider                          = azurerm.spoke1
+  name                              = "st${random_string.suffix-spoke1.result}"
+  resource_group_name               = azurerm_resource_group.rg_spoke1.name
+  location                          = azurerm_resource_group.rg_spoke1.location
+  account_tier                      = "Standard"
+  account_replication_type          = "LRS"
+  account_kind                      = "StorageV2"
+  access_tier                       = "Cool"
+  public_network_access_enabled     = false
+  allow_nested_items_to_be_public   = false
+  cross_tenant_replication_enabled  = false
+  shared_access_key_enabled         = true
+  https_traffic_only_enabled        = true
+  min_tls_version                   = "TLS1_2"
+  sftp_enabled                      = false
+  nfsv3_enabled                     = false
+  is_hns_enabled                    = false
   infrastructure_encryption_enabled = false
-  local_user_enabled               = false
+  local_user_enabled                = false
 
   blob_properties {
     versioning_enabled       = false

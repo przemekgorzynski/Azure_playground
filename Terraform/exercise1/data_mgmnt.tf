@@ -6,9 +6,9 @@ data "azurerm_private_dns_zone" "blob" {
 }
 
 data "azurerm_virtual_network" "vnet-hub" {
-  provider              = azurerm.mgmt
-  name                  = "vnet-hub-internal-we"
-  resource_group_name   = "rg-VnetHub-internal-we"
+  provider            = azurerm.mgmt
+  name                = "vnet-hub-internal-we"
+  resource_group_name = "rg-VnetHub-internal-we"
 }
 
 # Read existing PE subnet in mgmt/hub VNet
