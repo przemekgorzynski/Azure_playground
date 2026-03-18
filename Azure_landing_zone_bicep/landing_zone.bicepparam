@@ -1,8 +1,8 @@
 using 'landing_zone.bicep'
 
-param location = 'polandcentral'
-param regionSh = 'pl'
-param orgPrefix = 'company'
+param location = 'westeurope'
+param regionSh = 'we'
+param orgPrefix = 'internal'
 
 param tags = {
   Owner: 'Przemek Gorzynski'

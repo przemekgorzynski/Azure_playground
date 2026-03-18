@@ -150,6 +150,35 @@ module privateDns '../modules/bicep/privateDnsZone.bicep' = [for zone in Private
   }
 }]
 
+// DNS Zone link → Spoke1 VNet
+module privateDnsLinkSpoke1 '../modules/bicep/privateDnsZoneLink.bicep' = [for zone in PrivateDnsZones: {
+  name: 'privateDnsLink-spoke1-${zone.name}'
+  scope: resourceGroup(MgmntSubscriptionId, RgNameDnsHub)
+  dependsOn: [
+    privateDns
+    peeringSpoke1ToHub
+  ]
+  params: {
+    zoneName: zone.name
+    vnetID: VnetSpoke1.outputs.id
+    linkName: 'dns-link-spoke1-${zone.name}'
+  }
+}]
+
+// DNS Zone link → Spoke2 VNet
+module privateDnsLinkSpoke2 '../modules/bicep/privateDnsZoneLink.bicep' = [for zone in PrivateDnsZones: {
+  name: 'privateDnsLink-spoke2-${zone.name}'
+  scope: resourceGroup(MgmntSubscriptionId, RgNameDnsHub)
+  dependsOn: [
+    privateDns
+    peeringSpoke2ToHub
+  ]
+  params: {
+    zoneName: zone.name
+    vnetID: VnetSpoke2.outputs.id
+    linkName: 'dns-link-spoke2-${zone.name}'
+  }
+}]
 
 //////////////////////////////////////////////////////////
 /////////////////////// SPOKE 1 //////////////////////////
