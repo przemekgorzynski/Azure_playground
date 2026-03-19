@@ -27,6 +27,11 @@ hub_subnets = [
     name                              = "Hub-pe-subnet"
     prefix                            = "10.0.2.0/24"
     private_endpoint_network_policies = "Disabled"
+  },
+  {
+    name                              = "Hub-nva-subnet"
+    prefix                            = "10.0.3.0/28"
+    private_endpoint_network_policies = "Disabled"
   }
 ]
 
@@ -36,6 +41,18 @@ private_dns_zones = [
     auto_registration = false
   }
 ]
+
+# VM machine acting like proxy between spokes
+deploy_nva             = false
+nva_private_ip         = "10.0.3.4"
+nva_public_ip          = true
+nva_vm_size            = "Standard_B2ats_v2"
+nva_admin_username     = "azureadmin"
+nva_admin_ssh_key      = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZBY8AiU6cRPY+HCUQ2jr5Sti7Xs5UpS5Ke00yYTkia Przemyslaw Gorzynski"
+nva_vm_image_publisher = "Canonical"
+nva_vm_image_offer     = "0001-com-ubuntu-server-jammy"
+nva_vm_image_sku       = "22_04-lts"
+nva_vm_image_version   = "latest"
 
 # ── Spoke 1 ────────────────────────────────────────────────
 spoke1_vnet_address_prefix = "10.1.0.0/16"

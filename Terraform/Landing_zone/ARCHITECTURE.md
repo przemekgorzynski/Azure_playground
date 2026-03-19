@@ -16,8 +16,6 @@ Azure hub-and-spoke landing zone deployed via Terraform across three subscriptio
 
 ## Network topology
 
-![Landing Zone Architecture](docs/azure_landing_zone_architecture.svg)
-
 ```
 Management subscription
 ├── rg-VnetHub-internal-we
@@ -35,20 +33,18 @@ Spoke 1 subscription
     ├── vnet-spoke1-internal-we  (10.1.0.0/16)
     │   ├── subnet-01  (10.1.1.0/24)
     │   └── subnet-02  (10.1.2.0/24)
-    ├── rt-spoke1-internal-we
-    │   ├── 0.0.0.0/0  → Internet
-    │   └── 10.0.0.0/16 → VnetLocal
-    └── storage account  (stinternalspoke1we[random])
+    └── rt-spoke1-internal-we
+        ├── 0.0.0.0/0  → Internet
+        └── 10.0.0.0/16 → VnetLocal
 
 Spoke 2 subscription
 └── rg-VnetSpoke2-internal-we
     ├── vnet-spoke2-internal-we  (10.2.0.0/16)
     │   ├── subnet-01  (10.2.1.0/24)
     │   └── subnet-02  (10.2.2.0/24)
-    ├── rt-spoke2-internal-we
-    │   ├── 0.0.0.0/0  → Internet
-    │   └── 10.0.0.0/16 → VnetLocal
-    └── storage account  (stinternalspoke2we[random])
+    └── rt-spoke2-internal-we
+        ├── 0.0.0.0/0  → Internet
+        └── 10.0.0.0/16 → VnetLocal
 ```
 
 **Peerings** (bidirectional):

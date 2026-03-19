@@ -63,16 +63,12 @@ case $COMMAND in
     ;;
   apply)
     warn "This will make changes to your infrastructure!"
-    read -p "Are you sure? (yes/no): " CONFIRM
-    [ "$CONFIRM" != "yes" ] && error "Aborted by user"
     info "Running Terraform apply..."
     terraform apply -var-file $VAR_FILE
     success "Apply complete"
     ;;
   destroy)
     warn "This will DESTROY your infrastructure!"
-    read -p "Are you sure? (yes/no): " CONFIRM
-    [ "$CONFIRM" != "yes" ] && error "Aborted by user"
     info "Running Terraform destroy..."
     terraform destroy -var-file $VAR_FILE
     success "Destroy complete"

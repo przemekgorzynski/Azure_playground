@@ -43,3 +43,37 @@ module "hub_subnets" {
   subnet_prefix                     = each.value.prefix
   private_endpoint_network_policies = each.value.private_endpoint_network_policies
 }
+
+# ── NVA ────────────────────────────────────────────────────
+module "rg_nva" {
+  count     = var.deploy_nva ? 1 : 0
+  source    = "../../modules/terraform/resource_group"
+  providers = { azurerm = azurerm.mgmt }
+
+  name     = "rg-Nva-${var.org_prefix}-${var.region_sh}"
+  location = var.location
+  tags     = merge(var.tags, { Resource = "Resource Group" })
+}
+
+module "nva" {
+  count      = var.deploy_nva ? 1 : 0
+  source     = "../../modules/terraform/linux_vm"
+  providers  = { azurerm = azurerm.mgmt }
+  depends_on = [module.hub_subnets]
+
+  vm_name         = "vm-nva-${var.org_prefix}-${var.region_sh}"
+  location        = module.rg_nva[0].location
+  resource_group  = module.rg_nva[0].name
+  subnet_id       = module.hub_subnets["Hub-nva-subnet"].id
+  private_ip      = var.nva_private_ip
+  vm_size         = var.nva_vm_size
+  admin_username  = var.nva_admin_username
+  admin_ssh_key   = var.nva_admin_ssh_key
+  public_ip       = var.nva_public_ip
+  forward_traffic = true
+  image_publisher = var.nva_vm_image_publisher
+  image_offer     = var.nva_vm_image_offer
+  image_sku       = var.nva_vm_image_sku
+  image_version   = var.nva_vm_image_version
+  tags            = merge(var.tags, { Resource = "Virtual Machine" })
+}
