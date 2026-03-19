@@ -1,0 +1,75 @@
+org_prefix = "internal"
+region_sh  = "we"
+location   = "westeurope"
+
+tags = {
+  Owner       = "Przemek Gorzynski"
+  environment = "dev"
+  purpose     = "landing_zone"
+  createdBy   = "terraform"
+}
+
+# ── Service Principal ──────────────────────────────────────
+service_principal_object_id = "5574f1c9-00d5-443c-aed1-a24ed2a017a0"
+role_definition_id          = "8e3af657-a8ff-443c-a75c-2fe8c4bcb635" # Owner
+principal_type              = "ServicePrincipal"
+
+# ── Subscriptions ──────────────────────────────────────────
+mgmt_subscription_id  = "498ff788-a1a1-4860-a97f-3ee90d4fab61"
+spoke1_subscription_id = "4d0f2de4-fd44-4c94-ab45-5d8f2d2b3720"
+spoke2_subscription_id = "fa2293f5-402a-453a-a8da-0870c83a6122"
+
+# ── Hub ────────────────────────────────────────────────────
+hub_vnet_address_prefix = "10.0.0.0/16"
+
+hub_subnets = [
+  {
+    name                              = "Hub-mgmnt-subnet"
+    prefix                            = "10.0.1.0/24"
+    private_endpoint_network_policies = "Disabled"
+  },
+  {
+    name                              = "Hub-pe-subnet"
+    prefix                            = "10.0.2.0/24"
+    private_endpoint_network_policies = "Disabled"
+  }
+]
+
+private_dns_zones = [
+  {
+    name              = "privatelink.blob.core.windows.net"
+    auto_registration = false
+  }
+]
+
+# ── Spoke 1 ────────────────────────────────────────────────
+spoke1_vnet_address_prefix = "10.1.0.0/16"
+
+spoke1_subnets = [
+  {
+    name                              = "subnet-pe"
+    prefix                            = "10.1.1.0/24"
+    private_endpoint_network_policies = "Disabled"
+  },
+  {
+    name                              = "subnet-02"
+    prefix                            = "10.1.2.0/24"
+    private_endpoint_network_policies = "Disabled"
+  }
+]
+
+# ── Spoke 2 ────────────────────────────────────────────────
+spoke2_vnet_address_prefix = "10.2.0.0/16"
+
+spoke2_subnets = [
+  {
+    name                              = "subnet-pe"
+    prefix                            = "10.2.1.0/24"
+    private_endpoint_network_policies = "Disabled"
+  },
+  {
+    name                              = "subnet-02"
+    prefix                            = "10.2.2.0/24"
+    private_endpoint_network_policies = "Disabled"
+  }
+]
