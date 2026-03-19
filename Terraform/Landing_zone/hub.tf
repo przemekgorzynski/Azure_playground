@@ -19,8 +19,9 @@ module "rg_hub_dns" {
 
 # ── Hub VNet ───────────────────────────────────────────────
 module "vnet_hub" {
-  source    = "../../modules/terraform/vnet"
-  providers = { azurerm = azurerm.mgmt }
+  source     = "../../modules/terraform/vnet"
+  providers  = { azurerm = azurerm.mgmt }
+  depends_on = [module.rg_hub_vnet]
 
   vnet_name      = "vnet-hub-${var.org_prefix}-${var.region_sh}"
   address_prefix = var.hub_vnet_address_prefix
@@ -31,9 +32,10 @@ module "vnet_hub" {
 
 # ── Hub Subnets ────────────────────────────────────────────
 module "hub_subnets" {
-  source    = "../../modules/terraform/subnet"
-  providers = { azurerm = azurerm.mgmt }
-  for_each  = { for s in var.hub_subnets : s.name => s }
+  source     = "../../modules/terraform/subnet"
+  providers  = { azurerm = azurerm.mgmt }
+  for_each   = { for s in var.hub_subnets : s.name => s }
+  depends_on = [module.vnet_hub]
 
   vnet_name                         = module.vnet_hub.name
   resource_group                    = module.rg_hub_vnet.name

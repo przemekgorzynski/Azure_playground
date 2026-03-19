@@ -1,16 +1,11 @@
 variable "org_prefix" { type = string }
-variable "region_sh"  { type = string }
-variable "location"   { type = string }
+variable "region_sh" { type = string }
+variable "location" { type = string }
 
 variable "tags" { type = map(string) }
 
-# ── Service Principal ──────────────────────────────────────
-variable "service_principal_object_id" { type = string }
-variable "role_definition_id"          { type = string }
-variable "principal_type"              { type = string }
-
 # ── Subscriptions ──────────────────────────────────────────
-variable "mgmt_subscription_id"  { type = string }
+variable "mgmt_subscription_id" { type = string }
 variable "spoke1_subscription_id" { type = string }
 variable "spoke2_subscription_id" { type = string }
 

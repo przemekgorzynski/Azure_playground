@@ -1,4 +1,4 @@
-# ── Spoke 1 RG + VNet ──────────────────────────────────────
+# ── Spoke 1 RG ─────────────────────────────────────────────
 module "rg_spoke1_vnet" {
   source    = "../../modules/terraform/resource_group"
   providers = { azurerm = azurerm.spoke1 }
@@ -8,9 +8,11 @@ module "rg_spoke1_vnet" {
   tags     = merge(var.tags, { Resource = "Resource Group" })
 }
 
+# ── Spoke 1 VNet ───────────────────────────────────────────
 module "vnet_spoke1" {
-  source    = "../../modules/terraform/vnet"
-  providers = { azurerm = azurerm.spoke1 }
+  source     = "../../modules/terraform/vnet"
+  providers  = { azurerm = azurerm.spoke1 }
+  depends_on = [module.rg_spoke1_vnet]
 
   vnet_name      = "vnet-spoke1-${var.org_prefix}-${var.region_sh}"
   address_prefix = var.spoke1_vnet_address_prefix
@@ -21,9 +23,10 @@ module "vnet_spoke1" {
 
 # ── Spoke 1 Subnets ────────────────────────────────────────
 module "spoke1_subnets" {
-  source    = "../../modules/terraform/subnet"
-  providers = { azurerm = azurerm.spoke1 }
-  for_each  = { for s in var.spoke1_subnets : s.name => s }
+  source     = "../../modules/terraform/subnet"
+  providers  = { azurerm = azurerm.spoke1 }
+  for_each   = { for s in var.spoke1_subnets : s.name => s }
+  depends_on = [module.vnet_spoke1]
 
   vnet_name                         = module.vnet_spoke1.name
   resource_group                    = module.rg_spoke1_vnet.name
@@ -34,8 +37,9 @@ module "spoke1_subnets" {
 
 # ── Spoke 1 Route Table ────────────────────────────────────
 module "rt_spoke1" {
-  source    = "../../modules/terraform/route_table"
-  providers = { azurerm = azurerm.spoke1 }
+  source     = "../../modules/terraform/route_table"
+  providers  = { azurerm = azurerm.spoke1 }
+  depends_on = [module.spoke1_subnets]
 
   name           = "rt-spoke1-${var.org_prefix}-${var.region_sh}"
   location       = module.rg_spoke1_vnet.location
@@ -54,25 +58,4 @@ module "rt_spoke1" {
       next_hop_type  = "VnetLocal"
     }
   ]
-}
-
-# ── Spoke 1 Peerings ───────────────────────────────────────
-module "peering_hub_to_spoke1" {
-  source    = "../../modules/terraform/vnet_peering"
-  providers = { azurerm = azurerm.mgmt }
-
-  peering_name    = "peering-hub-to-spoke1"
-  local_vnet_name = module.vnet_hub.name
-  local_vnet_rg   = module.rg_hub_vnet.name
-  remote_vnet_id  = module.vnet_spoke1.id
-}
-
-module "peering_spoke1_to_hub" {
-  source    = "../../modules/terraform/vnet_peering"
-  providers = { azurerm = azurerm.spoke1 }
-
-  peering_name    = "peering-spoke1-to-hub"
-  local_vnet_name = module.vnet_spoke1.name
-  local_vnet_rg   = module.rg_spoke1_vnet.name
-  remote_vnet_id  = module.vnet_hub.id
 }
