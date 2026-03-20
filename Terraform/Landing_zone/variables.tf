@@ -10,6 +10,7 @@ variable "mgmt_subscription_id" { type = string }
 variable "spoke1_subscription_id" { type = string }
 variable "spoke2_subscription_id" { type = string }
 
+
 ##########################################################
 # ── Hub ────────────────────────────────────────────────────
 variable "hub_vnet_address_prefix" { type = string }
@@ -21,6 +22,20 @@ variable "hub_subnets" {
     private_endpoint_network_policies = string
   }))
 }
+variable "hub_nsg_rules" {
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_range     = string
+    source_address_prefix      = string
+    destination_address_prefix = string
+  }))
+  default = []
+}
 
 variable "private_dns_zones" {
   type = list(object({
@@ -29,7 +44,7 @@ variable "private_dns_zones" {
   }))
 }
 
-# ── VM image ───────────────────────────────────────────────
+# NVA - network virtual appliance
 variable "deploy_nva" {
   type    = bool
   default = false
@@ -69,6 +84,21 @@ variable "spoke1_subnets" {
   }))
 }
 
+variable "spoke1_nsg_rules" {
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_range     = string
+    source_address_prefix      = string
+    destination_address_prefix = string
+  }))
+  default = []
+}
+
 ##########################################################
 # ── Spoke 2 ────────────────────────────────────────────────
 variable "spoke2_vnet_address_prefix" { type = string }
@@ -79,4 +109,19 @@ variable "spoke2_subnets" {
     prefix                            = string
     private_endpoint_network_policies = string
   }))
+}
+
+variable "spoke2_nsg_rules" {
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_port_range          = string
+    destination_port_range     = string
+    source_address_prefix      = string
+    destination_address_prefix = string
+  }))
+  default = []
 }

@@ -44,6 +44,20 @@ module "hub_subnets" {
   private_endpoint_network_policies = each.value.private_endpoint_network_policies
 }
 
+# ── Hub NSG ────────────────────────────────────────────────
+module "hub_nsg" {
+  source     = "../../modules/terraform/nsg"
+  providers  = { azurerm = azurerm.mgmt }
+  depends_on = [module.hub_subnets]
+
+  name           = "nsg-hub-${var.org_prefix}-${var.region_sh}"
+  location       = module.rg_hub_vnet.location
+  resource_group = module.rg_hub_vnet.name
+  security_rules = var.hub_nsg_rules
+  tags           = merge(var.tags, { Resource = "Network Security Group" })
+  subnet_ids     = [for s in module.hub_subnets : s.id]
+}
+
 # ── NVA ────────────────────────────────────────────────────
 module "rg_nva" {
   count     = var.deploy_nva ? 1 : 0

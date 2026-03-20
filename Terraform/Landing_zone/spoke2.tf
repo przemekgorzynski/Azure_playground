@@ -59,3 +59,16 @@ module "rt_spoke2" {
     }
   ]
 }
+
+module "spoke2_nsg" {
+  source     = "../../modules/terraform/nsg"
+  providers  = { azurerm = azurerm.spoke2 }
+  depends_on = [module.spoke2_subnets]
+
+  name           = "nsg-spoke2-${var.org_prefix}-${var.region_sh}"
+  location       = module.rg_spoke2_vnet.location
+  resource_group = module.rg_spoke2_vnet.name
+  security_rules = var.spoke2_nsg_rules
+  tags           = merge(var.tags, { Resource = "Network Security Group" })
+  subnet_ids     = [for s in module.spoke2_subnets : s.id]
+}
