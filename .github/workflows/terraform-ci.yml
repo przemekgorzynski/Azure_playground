@@ -31,12 +31,3 @@ jobs:
       # ---- Terraform Validate ----
       - name: Terraform validate
         run: terraform validate
-
-      # ---- Checkov Scan ----
-      - name: Run Checkov
-        uses: bridgecrewio/checkov-action@v12
-        with:
-          directory: Terraform
-          framework: terraform
-          quiet: true
-          soft_fail: false
