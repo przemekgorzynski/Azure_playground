@@ -1,7 +1,7 @@
-variable "name" { type = string }
-variable "location" { type = string }
+variable "name"           { type = string }
+variable "location"       { type = string }
 variable "resource_group" { type = string }
-variable "tags" { type = map(string) }
+variable "tags"           { type = map(string) }
 
 variable "subnet_ids" {
   type        = list(string)

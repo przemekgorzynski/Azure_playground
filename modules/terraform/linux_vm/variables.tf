@@ -1,12 +1,12 @@
-variable "vm_name" { type = string }
-variable "location" { type = string }
-variable "resource_group" { type = string }
-variable "subnet_id" { type = string }
-variable "private_ip" { type = string }
-variable "vm_size" { type = string }
-variable "admin_username" { type = string }
-variable "admin_ssh_key" { type = string }
-variable "tags" { type = map(string) }
+variable "vm_name"          { type = string }
+variable "location"         { type = string }
+variable "resource_group"   { type = string }
+variable "subnet_id"        { type = string }
+variable "private_ip"       { type = string }
+variable "vm_size"          { type = string }
+variable "admin_username"   { type = string }
+variable "admin_ssh_key"    { type = string }
+variable "tags"             { type = map(string) }
 
 variable "image_publisher" {
   type    = string
