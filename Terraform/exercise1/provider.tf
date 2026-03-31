@@ -1,10 +1,10 @@
 # providers.tf
 terraform {
-  cloud { 
-    organization = "pszemazzz" 
-    workspaces { 
-      name = "exercise1" 
-    } 
+  cloud {
+    organization = "pszemazzz"
+    workspaces {
+      name = "exercise1"
+    }
   }
 
   required_providers {

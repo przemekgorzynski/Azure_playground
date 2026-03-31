@@ -53,12 +53,12 @@ resource "azurerm_network_interface" "this" {
 }
 
 resource "azurerm_linux_virtual_machine" "this" {
-  name                  = var.vm_name
-  location              = var.location
-  resource_group_name   = var.resource_group
-  size                  = var.vm_size
-  admin_username        = var.admin_username
-  
+  name                = var.vm_name
+  location            = var.location
+  resource_group_name = var.resource_group
+  size                = var.vm_size
+  admin_username      = var.admin_username
+
   network_interface_ids = [
     azurerm_network_interface.this.id
   ]
@@ -84,5 +84,5 @@ resource "azurerm_linux_virtual_machine" "this" {
     var.forward_traffic ? local.cloud_init_nva : local.cloud_init_normal
   )
 
-  tags                  = var.tags
+  tags = var.tags
 }
