@@ -70,5 +70,12 @@ module "spoke2_nsg" {
   resource_group = module.rg_spoke2_vnet.name
   security_rules = var.spoke2_nsg_rules
   tags           = merge(var.tags, { Resource = "Network Security Group" })
-  subnet_ids     = [for s in module.spoke2_subnets : s.id]
+}
+
+resource "azurerm_subnet_network_security_group_association" "spoke2" {
+  provider = azurerm.spoke2
+  for_each = { for s in var.spoke2_subnets : s.name => module.spoke2_subnets[s.name].id }
+
+  subnet_id                 = each.value
+  network_security_group_id = module.spoke2_nsg.id
 }

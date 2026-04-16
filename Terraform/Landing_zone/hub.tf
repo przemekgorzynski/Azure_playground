@@ -55,7 +55,14 @@ module "hub_nsg" {
   resource_group = module.rg_hub_vnet.name
   security_rules = var.hub_nsg_rules
   tags           = merge(var.tags, { Resource = "Network Security Group" })
-  subnet_ids     = [for s in module.hub_subnets : s.id]
+}
+
+resource "azurerm_subnet_network_security_group_association" "hub" {
+  provider = azurerm.mgmt
+  for_each = { for s in var.hub_subnets : s.name => module.hub_subnets[s.name].id }
+
+  subnet_id                 = each.value
+  network_security_group_id = module.hub_nsg.id
 }
 
 # ── NVA ────────────────────────────────────────────────────
