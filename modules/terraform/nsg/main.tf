@@ -28,10 +28,3 @@ resource "azurerm_network_security_group" "this" {
     }
   }
 }
-
-resource "azurerm_subnet_network_security_group_association" "this" {
-  for_each = toset(var.subnet_ids)
-
-  subnet_id                 = each.value
-  network_security_group_id = azurerm_network_security_group.this.id
-}
