@@ -30,21 +30,22 @@ success "Environment variables validated"
 
 # ── Args ───────────────────────────────────────────────────
 COMMAND=${1:-plan}
-VAR_FILE=${2:-lz.tfvars}
-
-# ── Check tfvars file exists (not needed for init) ─────────
-if [ "$COMMAND" != "init" ] && [ ! -f "$VAR_FILE" ]; then
-  error "Var file '$VAR_FILE' not found"
-fi
 
 # ── Check terraform is installed ───────────────────────────
 if ! command -v terraform &> /dev/null; then
   error "Terraform is not installed or not in PATH"
 fi
 
+# ── Build -var-file flags from all *.tfvars in order ───────
+VAR_ARGS=""
+for f in vars/common.tfvars vars/hub.tfvars vars/spoke1.tfvars vars/spoke2.tfvars; do
+  [ "$COMMAND" != "init" ] && [ ! -f "$f" ] && error "Var file '$f' not found"
+  VAR_ARGS="$VAR_ARGS -var-file $f"
+done
+
 echo ""
 info "Command  : $COMMAND"
-info "Var file : $VAR_FILE"
+info "Var files: vars/common vars/hub vars/spoke1 vars/spoke2"
 info "Tenant   : $ARM_TENANT_ID"
 info "Client   : $ARM_CLIENT_ID"
 echo ""
@@ -58,22 +59,22 @@ case $COMMAND in
     ;;
   plan)
     info "Running Terraform plan..."
-    terraform plan -var-file $VAR_FILE
+    terraform plan $VAR_ARGS
     success "Plan complete"
     ;;
   apply)
     warn "This will make changes to your infrastructure!"
     info "Running Terraform apply..."
-    terraform apply -var-file $VAR_FILE
+    terraform apply $VAR_ARGS
     success "Apply complete"
     ;;
   destroy)
     warn "This will DESTROY your infrastructure!"
     info "Running Terraform destroy..."
-    terraform destroy -var-file $VAR_FILE
+    terraform destroy $VAR_ARGS
     success "Destroy complete"
     ;;
   *)
-    error "Unknown command '$COMMAND'. Usage: $0 {init|plan|apply|destroy} [tfvars_file]"
+    error "Unknown command '$COMMAND'. Usage: $0 {init|plan|apply|destroy}"
     ;;
 esac

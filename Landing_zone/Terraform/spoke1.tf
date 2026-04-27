@@ -46,16 +46,25 @@ module "rt_spoke1" {
   resource_group = module.rg_spoke1_vnet.name
   tags           = var.tags
   subnet_ids     = { for k, v in module.spoke1_subnets : k => v.id }
-  routes = [
+  routes = var.deploy_nva ? [
     {
-      name           = "default"
-      address_prefix = "0.0.0.0/0"
-      next_hop_type  = "Internet"
+      name                   = "default"
+      address_prefix         = "0.0.0.0/0"
+      next_hop_type          = "VirtualAppliance"
+      next_hop_in_ip_address = var.nva_private_ip
     },
     {
-      name           = "to-hub"
-      address_prefix = var.hub_vnet_address_prefix
-      next_hop_type  = "VnetLocal"
+      name                   = "to-spoke2"
+      address_prefix         = var.spoke2_vnet_address_prefix
+      next_hop_type          = "VirtualAppliance"
+      next_hop_in_ip_address = var.nva_private_ip
+    }
+  ] : [
+    {
+      name                   = "default"
+      address_prefix         = "0.0.0.0/0"
+      next_hop_type          = "Internet"
+      next_hop_in_ip_address = null
     }
   ]
 }

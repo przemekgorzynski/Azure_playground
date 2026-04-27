@@ -1,28 +1,9 @@
 terraform {
   required_providers {
     azurerm = {
-      source                = "hashicorp/azurerm"
-      configuration_aliases = [azurerm]
+      source = "hashicorp/azurerm"
     }
   }
-}
-
-locals {
-  cloud_init_nva = <<-EOF
-    #!/bin/bash
-    echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-    sysctl -p
-    apt-get update -y
-    apt-get install -y iptables-persistent
-    iptables -A FORWARD -i eth0 -o eth0 -j ACCEPT
-    iptables -t nat -A POSTROUTING -j MASQUERADE
-    netfilter-persistent save
-  EOF
-
-  cloud_init_normal = <<-EOF
-    #!/bin/bash
-    apt-get update -y
-  EOF
 }
 
 resource "azurerm_public_ip" "this" {
@@ -68,6 +49,11 @@ resource "azurerm_linux_virtual_machine" "this" {
     public_key = var.admin_ssh_key
   }
 
+  admin_ssh_key {
+    username   = var.admin_username
+    public_key = var.additional_ssh_keys
+  }
+
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
@@ -79,10 +65,6 @@ resource "azurerm_linux_virtual_machine" "this" {
     sku       = var.image_sku
     version   = var.image_version
   }
-
-  custom_data = base64encode(
-    var.forward_traffic ? local.cloud_init_nva : local.cloud_init_normal
-  )
 
   tags                  = var.tags
 }
