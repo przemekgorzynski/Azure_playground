@@ -51,3 +51,15 @@ spoke1_nsg_rules = [
     destination_address_prefix = "10.0.0.0/8"
   }
 ]
+
+# VM
+deploy_spoke1_vm              = false
+spoke1_vm_private_ip          = "10.1.2.4"
+spoke1_vm_public_ip           = false
+spoke1_vm_size                = "Standard_B2ats_v2"
+spoke1_vm_admin_username      = "azureadmin"
+spoke1_vm_admin_ssh_key       = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILZBY8AiU6cRPY+HCUQ2jr5Sti7Xs5UpS5Ke00yYTkia Przemyslaw Gorzynski"
+spoke1_vm_image_publisher     = "Canonical"
+spoke1_vm_image_offer         = "0001-com-ubuntu-server-jammy"
+spoke1_vm_image_sku           = "22_04-lts"
+spoke1_vm_image_version       = "latest"

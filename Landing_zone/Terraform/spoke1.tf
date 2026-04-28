@@ -88,3 +88,76 @@ resource "azurerm_subnet_network_security_group_association" "spoke1" {
   subnet_id                 = each.value
   network_security_group_id = module.spoke1_nsg.id
 }
+
+# ── Spoke 1 VM ─────────────────────────────────────────────
+module "rg_spoke1_vm" {
+  count     = var.deploy_spoke1_vm ? 1 : 0
+  source    = "../../modules/terraform/resource_group"
+  providers = { azurerm = azurerm.spoke1 }
+
+  name     = "rg-Vm-Spoke1-${var.org_prefix}-${var.region_sh}"
+  location = var.location
+  tags     = merge(var.tags, { Resource = "Resource Group" })
+}
+
+module "spoke1_vm" {
+  count      = var.deploy_spoke1_vm ? 1 : 0
+  source     = "../../modules/terraform/linux_vm"
+  providers  = { azurerm = azurerm.spoke1 }
+  depends_on = [module.spoke1_subnets]
+
+  vm_name               = "vm-spoke1-${var.org_prefix}-${var.region_sh}"
+  location              = module.rg_spoke1_vm[0].location
+  resource_group        = module.rg_spoke1_vm[0].name
+  subnet_id             = module.spoke1_subnets["subnet-02"].id
+  private_ip            = var.spoke1_vm_private_ip
+  vm_size               = var.spoke1_vm_size
+  admin_username        = var.spoke1_vm_admin_username
+  admin_ssh_key         = var.spoke1_vm_admin_ssh_key
+  additional_ssh_keys   = tls_private_key.ssh_key.public_key_openssh
+  public_ip             = var.spoke1_vm_public_ip
+  image_publisher       = var.spoke1_vm_image_publisher
+  image_offer           = var.spoke1_vm_image_offer
+  image_sku             = var.spoke1_vm_image_sku
+  image_version         = var.spoke1_vm_image_version
+  tags                  = merge(var.tags, { Resource = "Virtual Machine" })
+}
+
+resource "null_resource" "spoke1_vm_setup" {
+  count = var.deploy_spoke1_vm ? 1 : 0
+  depends_on = [
+    module.spoke1_vm,
+    null_resource.nva_setup,
+  ]
+
+  triggers = {
+    script_hash = filemd5(local.standard_vm_script)
+  }
+
+  connection {
+    type        = "ssh"
+    # When NVA is deployed, the default route on spoke1 subnets forces all
+    # return traffic through the NVA, breaking direct public-IP SSH. Jump
+    # through the NVA instead and target the private IP.
+    host        = var.deploy_nva ? module.spoke1_vm[0].private_ip : module.spoke1_vm[0].public_ip
+    user        = var.spoke1_vm_admin_username
+    private_key = tls_private_key.ssh_key.private_key_openssh
+    timeout     = "5m"
+
+    bastion_host        = var.deploy_nva ? module.nva[0].public_ip : null
+    bastion_user        = var.deploy_nva ? var.nva_admin_username : null
+    bastion_private_key = var.deploy_nva ? tls_private_key.ssh_key.private_key_openssh : null
+  }
+
+  provisioner "file" {
+    source      = local.standard_vm_script
+    destination = "/tmp/setup_standard.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/setup_standard.sh",
+      "sudo /tmp/setup_standard.sh"
+    ]
+  }
+}

@@ -73,7 +73,7 @@ private_dns_zones = [
 ]
 
 # ── NVA ────────────────────────────────────────────────────
-deploy_nva             = true
+deploy_nva             = false
 nva_private_ip         = "10.0.3.4"
 nva_public_ip          = true
 nva_vm_size            = "Standard_B2ats_v2"

@@ -6,19 +6,17 @@ export DEBIAN_FRONTEND=noninteractive
 # wait for cloud-init to finish before touching apt
 cloud-init status --wait || true
 
-# repair any interrupted dpkg state
-dpkg --configure -a
-
-apt-get update -y
-apt-get upgrade -y
-apt-get autoremove -y
+# disable ufw so it doesn't interfere with iptables rules
+systemctl disable --now ufw || true
 
 # IP forwarding
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-sysctl -p
+echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/99-nva.conf
+sysctl --system
 
-# NAT / masquerade
+# NAT / masquerade — flush first so re-runs don't accumulate duplicates
 apt-get install -y iptables-persistent
-iptables -A FORWARD -i eth0 -o eth0 -j ACCEPT
+iptables -F FORWARD
+iptables -t nat -F POSTROUTING
+iptables -A FORWARD -j ACCEPT
 iptables -t nat -A POSTROUTING -j MASQUERADE
 netfilter-persistent save
