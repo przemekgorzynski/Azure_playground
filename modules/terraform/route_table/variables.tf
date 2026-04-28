@@ -5,9 +5,10 @@ variable "tags"           { type = map(string) }
 
 variable "routes" {
   type = list(object({
-    name           = string
-    address_prefix = string
-    next_hop_type  = string
+    name                   = string
+    address_prefix         = string
+    next_hop_type          = string
+    next_hop_in_ip_address = optional(string)
   }))
 }
 

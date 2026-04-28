@@ -99,6 +99,37 @@ variable "spoke1_nsg_rules" {
   default = []
 }
 
+# ── Spoke 1 VM ─────────────────────────────────────────────
+variable "deploy_spoke1_vm" {
+  type    = bool
+  default = false
+}
+
+variable "spoke1_vm_size" {
+  type    = string
+  default = "Standard_B2ats_v2"
+}
+
+variable "spoke1_vm_admin_username" {
+  type    = string
+  default = "azureadmin"
+}
+
+variable "spoke1_vm_admin_ssh_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "spoke1_vm_private_ip" {
+  type    = string
+  default = null
+}
+variable "spoke1_vm_public_ip"       { type = bool }
+variable "spoke1_vm_image_publisher" { type = string }
+variable "spoke1_vm_image_offer"     { type = string }
+variable "spoke1_vm_image_sku"       { type = string }
+variable "spoke1_vm_image_version"   { type = string }
+
 ##########################################################
 # ── Spoke 2 ────────────────────────────────────────────────
 variable "spoke2_vnet_address_prefix" { type = string }

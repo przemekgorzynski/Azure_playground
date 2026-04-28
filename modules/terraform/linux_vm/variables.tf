@@ -2,11 +2,15 @@ variable "vm_name"          { type = string }
 variable "location"         { type = string }
 variable "resource_group"   { type = string }
 variable "subnet_id"        { type = string }
-variable "private_ip"       { type = string }
+variable "private_ip" {
+  type    = string
+  default = null
+}
 variable "vm_size"          { type = string }
 variable "admin_username"   { type = string }
-variable "admin_ssh_key"    { type = string }
-variable "tags"             { type = map(string) }
+variable "admin_ssh_key"        { type = string }
+variable "additional_ssh_keys"  { type = string }
+variable "tags"                 { type = map(string) }
 
 variable "image_publisher" {
   type    = string
@@ -34,7 +38,6 @@ variable "public_ip" {
 }
 
 variable "forward_traffic" {
-  type        = bool
-  default     = false
-  description = "Set to true to configure VM as NVA — enables IP forwarding on NIC and configures iptables on first boot"
+  type    = bool
+  default = false
 }

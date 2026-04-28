@@ -1,12 +1,4 @@
-# providers.tf
 terraform {
-  cloud { 
-    organization = "pszemazzz" 
-    workspaces { 
-      name = "exercise1" 
-    } 
-  }
-
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -16,26 +8,38 @@ terraform {
       source  = "hashicorp/random"
       version = "3.8.0"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.0"
+    }
+  }
+
+  cloud {
+    organization = "pszemazzz"
+    workspaces {
+      name = "Landing_Zone"
+    }
   }
 }
 
-# Subscription mgmnt
 provider "azurerm" {
   alias           = "mgmt"
-  subscription_id = "498ff788-a1a1-4860-a97f-3ee90d4fab61"
+  subscription_id = var.mgmt_subscription_id
   features {}
 }
 
-# Subscription  spoke1
 provider "azurerm" {
   alias           = "spoke1"
-  subscription_id = "4d0f2de4-fd44-4c94-ab45-5d8f2d2b3720"
+  subscription_id = var.spoke1_subscription_id
   features {}
 }
 
-# Subscription spoke2 
 provider "azurerm" {
   alias           = "spoke2"
-  subscription_id = "fa2293f5-402a-453a-a8da-0870c83a6122"
+  subscription_id = var.spoke2_subscription_id
   features {}
 }
