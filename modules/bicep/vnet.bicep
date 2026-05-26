@@ -6,7 +6,7 @@ param vnetAddressPrefix string
 param location string
 param tags object
 
-resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2023-11-01' = {
   name: vnetName
   location: location
   tags: tags
