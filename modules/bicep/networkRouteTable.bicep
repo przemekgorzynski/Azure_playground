@@ -4,7 +4,7 @@ param location string
 param tags object
 param routes array = []
 
-resource routeTable 'Microsoft.Network/routeTables@2023-04-01' = {
+resource routeTable 'Microsoft.Network/routeTables@2023-09-01' = {
   name: routeTableName
   location: location
   tags: tags
